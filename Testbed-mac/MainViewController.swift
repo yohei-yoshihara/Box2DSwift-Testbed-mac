@@ -31,7 +31,7 @@ import Box2D
 class MainViewController: NSViewController, RenderViewDelegate, SettingViewControllerDelegate {
   weak var infoViewController: InfoViewController?
   
-  lazy var renderView = RenderView(frame: .zero)
+  lazy var debugDraw = RenderView(frame: .zero)
   
   var testCase: TestCase?
   var world: b2World?
@@ -46,16 +46,15 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    renderView.translatesAutoresizingMaskIntoConstraints = false
-    view.addSubview(renderView)
+    debugDraw.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(debugDraw)
     NSLayoutConstraint.activate([
-      renderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-      renderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-      view.bottomAnchor.constraint(equalTo: renderView.bottomAnchor),
-      view.trailingAnchor.constraint(equalTo: renderView.trailingAnchor),
+      debugDraw.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+      debugDraw.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      view.bottomAnchor.constraint(equalTo: debugDraw.bottomAnchor),
+      view.trailingAnchor.constraint(equalTo: debugDraw.trailingAnchor),
     ])
-    renderView.delegate = self
-    renderView.initialize()
+    debugDraw.delegate = self
     
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(testCaseChanged),
@@ -74,24 +73,24 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
     let testCase = testCaseClass.init()
     self.testCase = testCase
     
-    renderView.metalKitView.preferredFramesPerSecond = Int(settings.hz)
+    debugDraw.metalKitView.preferredFramesPerSecond = Int(settings.hz)
     infoViewController?.customView = testCase.customView
 
     let gravity = b2Vec2(0.0, -10.0)
     let world = b2World(gravity: gravity)
     let contactListener = ContactListener()
     world.setContactListener(contactListener)
-    world.setDebugDraw(renderView)
-    renderView.SetFlags(settings.debugDrawFlag)
+    world.setDebugDraw(debugDraw)
+    debugDraw.setFlags(settings.debugDrawFlag)
     
-    let bombLauncher = BombLauncher(world: world, renderView: renderView, viewCenter: settings.viewCenter)
+    let bombLauncher = BombLauncher(world: world, renderView: debugDraw, viewCenter: settings.viewCenter)
     infoViewController?.infoView.world = world
     
     testCase.world = world
     testCase.bombLauncher = bombLauncher
     testCase.contactListener = contactListener
     testCase.stepCount = 0
-    testCase.debugDraw = renderView
+    testCase.debugDraw = debugDraw
     
     let bodyDef = b2BodyDef()
     groundBody = world.createBody(bodyDef)
@@ -127,18 +126,18 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
   }
   
   func updateCoordinate() {
-    let (lower, upper) = calcViewBounds(renderViewSize: renderView.frame.size,
+    let (lower, upper) = calcViewBounds(viewSize: debugDraw.frame.size,
                                         viewCenter: settings.viewCenter,
                                         extents: Settings.extents)
-    renderView.setOrtho2D(left: lower.x, right: upper.x, bottom: lower.y, top: upper.y)
+    debugDraw.setOrtho2D(left: lower.x, right: upper.x, bottom: lower.y, top: upper.y)
   }
   
   var wp = b2Vec2(0, 0)
   
   override func mouseDown(with event: NSEvent) {
     guard let world else { return }
-    let p = renderView.convert(event.locationInWindow, from: nil)
-    wp = ConvertScreenToWorld(p, size: renderView.bounds.size, viewCenter: settings.viewCenter)
+    let p = debugDraw.convert(event.locationInWindow, from: nil)
+    wp = convertScreenToWorld(p, size: debugDraw.bounds.size, viewCenter: settings.viewCenter)
     
     let d = b2Vec2(0.001, 0.001)
     var aabb = b2AABB()
@@ -162,8 +161,8 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
   }
   
   override func mouseDragged(with event: NSEvent) {
-    let p = renderView.convert(event.locationInWindow, from: nil)
-    wp = ConvertScreenToWorld(p, size: renderView.bounds.size, viewCenter: settings.viewCenter)
+    let p = debugDraw.convert(event.locationInWindow, from: nil)
+    wp = convertScreenToWorld(p, size: debugDraw.bounds.size, viewCenter: settings.viewCenter)
     
     if let mouseJoint {
       mouseJoint.setTarget(wp)
@@ -174,9 +173,9 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
   }
   
   override func mouseUp(with event: NSEvent) {
-    let p = renderView.convert(event.locationInWindow, from: nil)
-    let wp = ConvertScreenToWorld(p,
-                                  size: renderView.bounds.size,
+    let p = debugDraw.convert(event.locationInWindow, from: nil)
+    let wp = convertScreenToWorld(p,
+                                  size: debugDraw.bounds.size,
                                   viewCenter: settings.viewCenter)
     if mouseJoint != nil {
       world?.destroyJoint(mouseJoint!)
@@ -226,23 +225,8 @@ class MainViewController: NSViewController, RenderViewDelegate, SettingViewContr
   func didSettingsChanged(_ settings: Settings) {
     infoViewController?.infoView.enableProfile = settings.drawProfile
     infoViewController?.infoView.enableStats = settings.drawStats
-    renderView.metalKitView.preferredFramesPerSecond = Int(settings.hz)
-    renderView.SetFlags(settings.debugDrawFlag)
+    debugDraw.metalKitView.preferredFramesPerSecond = Int(settings.hz)
+    debugDraw.setFlags(settings.debugDrawFlag)
   }
 }
 
-func calcViewBounds(renderViewSize: CGSize, viewCenter: b2Vec2, extents: b2Vec2) -> (lower: b2Vec2, upper: b2Vec2) {
-  var lower = viewCenter - extents
-  var upper = viewCenter + extents
-  
-  if renderViewSize.width > renderViewSize.height {
-    let r = renderViewSize.width / renderViewSize.height
-    lower.x *= Float(r)
-    upper.x *= Float(r)
-  } else {
-    let r = renderViewSize.height / renderViewSize.width
-    lower.y *= Float(r)
-    upper.y *= Float(r)
-  }
-  return (lower, upper)
-}

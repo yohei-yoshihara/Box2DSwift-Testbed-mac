@@ -56,19 +56,15 @@ class RenderView: NSView, MTKViewDelegate, b2Draw {
       bottomAnchor.constraint(equalTo: metalKitView.bottomAnchor),
       trailingAnchor.constraint(equalTo: metalKitView.trailingAnchor),
     ])
+    renderer = Renderer(metalKitView: metalKitView)
+    metalKitView.delegate = self
   }
   
   required init?(coder aDecoder: NSCoder) {
-    metalKitView = MTKView()
-    super.init(coder: aDecoder)
+    fatalError("not supported")
   }
   
   deinit {
-  }
-
-  func initialize() {
-    renderer = Renderer(metalKitView: metalKitView)
-    metalKitView.delegate = self
   }
   
   func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -82,15 +78,12 @@ class RenderView: NSView, MTKViewDelegate, b2Draw {
     renderer.postRender(in: view)
   }
 
-//  func preRender() {
-//    renderer.preRender()
-//    renderer.setOrtho2D(left: left, right: right, bottom: bottom, top: top)
-//  }
-//  
-//  func postRender() {
-//    renderer.postRender()
-//  }
+  func preRender() {
+  }
   
+  func postRender() {
+  }
+
   func setOrtho2D(left: b2Float, right: b2Float, bottom: b2Float, top: b2Float) {
     self.left = left
     self.right = right
@@ -101,7 +94,7 @@ class RenderView: NSView, MTKViewDelegate, b2Draw {
   // MARK: - b2Draw
   
   /// Set the drawing flags.
-  func SetFlags(_ flags : UInt32) {
+  func setFlags(_ flags : UInt32) {
     m_drawFlags = flags
   }
   

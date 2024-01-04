@@ -65,7 +65,7 @@ class BombLauncher : NSObject {
   }
   
   func launchBomb() {
-    let p = b2Vec2(RandomFloat(-15.0, 15.0), 30.0)
+    let p = b2Vec2(randomFloat(-15.0, 15.0), 30.0)
     let v = -5.0 * p
     launchBomb(position: p, velocity: v)
   }

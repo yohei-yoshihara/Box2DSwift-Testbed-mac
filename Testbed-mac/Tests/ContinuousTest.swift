@@ -63,7 +63,7 @@ class ContinuousTest: TestCase {
       self.body = self.world.createBody(bd)
       self.body.createFixture(shape: shape, density: 1.0)
       
-      self.angularVelocity = RandomFloat(-50.0, 50.0)
+      self.angularVelocity = randomFloat(-50.0, 50.0)
       //angularVelocity = 46.661274f;
       self.body.setLinearVelocity(b2Vec2(0.0, -100.0))
       self.body.setAngularVelocity(self.angularVelocity)

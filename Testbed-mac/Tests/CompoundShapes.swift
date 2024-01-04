@@ -52,11 +52,11 @@ class CompoundShapes: TestCase {
       circle2.p.set(0.5, 0.5)
       
       for i in 0 ..< 10 {
-        let x = RandomFloat(-0.1, 0.1)
+        let x = randomFloat(-0.1, 0.1)
         let bd = b2BodyDef()
         bd.type = b2BodyType.dynamicBody
         bd.position.set(x + 5.0, 1.05 + 2.5 * b2Float(i))
-        bd.angle = RandomFloat(-b2_pi, b2_pi)
+        bd.angle = randomFloat(-b2_pi, b2_pi)
         let body = self.world.createBody(bd)
         body.createFixture(shape: circle1, density: 2.0)
         body.createFixture(shape: circle2, density: 0.0)
@@ -71,11 +71,11 @@ class CompoundShapes: TestCase {
       polygon2.setAsBox(halfWidth: 0.25, halfHeight: 0.5, center: b2Vec2(0.0, -0.5), angle: 0.5 * b2_pi)
       
       for i in 0 ..< 10 {
-        let x = RandomFloat(-0.1, 0.1)
+        let x = randomFloat(-0.1, 0.1)
         let bd = b2BodyDef()
         bd.type = b2BodyType.dynamicBody
         bd.position.set(x - 5.0, 1.05 + 2.5 * b2Float(i))
-        bd.angle = RandomFloat(-b2_pi, b2_pi)
+        bd.angle = randomFloat(-b2_pi, b2_pi)
         let body = self.world.createBody(bd)
         body.createFixture(shape: polygon1, density: 2.0)
         body.createFixture(shape: polygon2, density: 2.0)
@@ -106,7 +106,7 @@ class CompoundShapes: TestCase {
       triangle2.set(vertices: vertices)
       
       for i in 0 ..< 10 {
-        let x = RandomFloat(-0.1, 0.1)
+        let x = randomFloat(-0.1, 0.1)
         let bd = b2BodyDef()
         bd.type = b2BodyType.dynamicBody
         bd.position.set(x, 2.05 + 2.5 * b2Float(i))

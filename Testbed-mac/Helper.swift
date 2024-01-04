@@ -33,12 +33,12 @@ func randomFloat() -> b2Float {
   return rand
 }
 
-func RandomFloat(_ low: b2Float, _ high: b2Float) -> b2Float {
+func randomFloat(_ low: b2Float, _ high: b2Float) -> b2Float {
   let rand = (b2Float(arc4random_uniform(1000)) / b2Float(1000)) * (high - low) + low
   return rand
 }
 
-func ConvertScreenToWorld(_ tp: CGPoint, size: CGSize, viewCenter: b2Vec2) -> b2Vec2 {
+func convertScreenToWorld(_ tp: CGPoint, size: CGSize, viewCenter: b2Vec2) -> b2Vec2 {
   let u = b2Float(tp.x / size.width)
   let v = b2Float(tp.y / size.height)
   let extents = b2Vec2(25.0, 25.0)
@@ -50,32 +50,26 @@ func ConvertScreenToWorld(_ tp: CGPoint, size: CGSize, viewCenter: b2Vec2) -> b2
   return p
 }
 
-func CalculateRenderViewFrame(_ parentView: NSView) -> CGRect {
-  let margin: CGFloat = 8
-  let d = min(parentView.bounds.size.width, parentView.bounds.size.height) - margin
-  let x = (parentView.bounds.size.width - d) / 2.0
-  let y = (parentView.bounds.size.height - d) / 2.0
-  return CGRect(x: x, y: y, width: d, height: d)
+func calcViewBounds(viewSize: CGSize, viewCenter: b2Vec2, extents: b2Vec2) -> (lower: b2Vec2, upper: b2Vec2) {
+  var lower = viewCenter - extents
+  var upper = viewCenter + extents
+  
+  if viewSize.width > viewSize.height {
+    let r = viewSize.width / viewSize.height
+    lower.x *= Float(r)
+    upper.x *= Float(r)
+  } else {
+    let r = viewSize.height / viewSize.width
+    lower.y *= Float(r)
+    upper.y *= Float(r)
+  }
+  return (lower, upper)
 }
-
-//func checkBackButton(_ viewController: NSViewController) -> Bool {
-//  let vcs: [AnyObject]? = viewController.navigationController?.viewControllers
-//  if vcs != nil {
-//    var found = false
-//    for vc in vcs! {
-//      if vc === viewController {
-//        found = true
-//        break
-//      }
-//    }
-//    return found == false
-//  }
-//  return false
-//}
 
 class Settings : CustomStringConvertible {
   static let extents = b2Vec2(25.0, 25.0)
   init() {
+    assert(Settings.extents.x == Settings.extents.y)
     viewCenter = b2Vec2(0.0, 20.0)
     hz = b2Float(60.0)
     velocityIterations = 8

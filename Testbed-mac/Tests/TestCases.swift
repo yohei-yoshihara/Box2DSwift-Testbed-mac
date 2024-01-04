@@ -69,7 +69,7 @@ let testCases: [TestCase.Type] = [
   SphereStack.self,
   TheoJansen.self,
   Tiles.self,
-  TimeOfImpact.self,
+//  TimeOfImpact.self,
   Tumbler.self,
   VaryingFriction.self,
   VerticalStack.self,

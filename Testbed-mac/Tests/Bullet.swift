@@ -80,7 +80,7 @@ class Bullet: TestCase {
     body.setLinearVelocity(b2Vec2_zero)
     body.setAngularVelocity(0.0)
   
-    x = RandomFloat(-1.0, 1.0)
+    x = randomFloat(-1.0, 1.0)
     bullet.setTransform(position: b2Vec2(x, 10.0), angle: 0.0)
     bullet.setLinearVelocity(b2Vec2(0.0, -50.0))
     bullet.setAngularVelocity(0.0)

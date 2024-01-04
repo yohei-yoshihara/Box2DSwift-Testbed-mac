@@ -45,7 +45,7 @@ class AddPair : TestCase {
       for _ in 0 ..< 50 {
         let bd = b2BodyDef()
         bd.type = b2BodyType.dynamicBody
-        bd.position = b2Vec2(RandomFloat(minX,maxX),RandomFloat(minY,maxY))
+        bd.position = b2Vec2(randomFloat(minX,maxX),randomFloat(minY,maxY))
         let body = world.createBody(bd)
         body.createFixture(shape: shape, density: 0.01)
       }
